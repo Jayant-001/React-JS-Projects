@@ -14,11 +14,27 @@ const Todo = () => {
 
   const [inputData, setInputData] = useState("");
   const [items, setItems] = useState(getLocalData);
+  const [isEditItem, setIdEditItem] = useState("")
+  const [toggleButton, setToggleButton] = useState(false)
 
   const addItem = () => {
     const input = inputData.trim();
     if (input.length < 1) {
       alert("Input box is empty");
+      return;
+    }
+    if(toggleButton) {
+      setItems(
+        items.map((curItem) => {
+          if(curItem.id === isEditItem) {
+            return {...curItem, name: input}
+          }
+          return curItem
+        })
+      )
+      setInputData("")
+      setIdEditItem(null)
+      setToggleButton(false)
       return;
     }
 
@@ -32,12 +48,14 @@ const Todo = () => {
   };
 
   const updateItem = (id) => {
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].id === id) setInputData(items[i].name)
-    }
+    const item_todo_update = items.find((curItem) => {
+      return curItem.id === id;
+    })
+    
+    setInputData(item_todo_update.name)
+    setIdEditItem(id)
+    setToggleButton(true)
 
-
-    console.log(id)
 
   }
 
@@ -91,7 +109,8 @@ const Todo = () => {
                   className='btn btn-outline-secondary'
                   type='button'
                 >
-                  <i className='fa fa-plus add-btn'></i>
+                  {!toggleButton && <i className='fa fa-plus add-btn'></i>}
+                  {toggleButton && <i className='fa fa-edit add-btn'></i>}
                 </button>
               </div>
             </div>
